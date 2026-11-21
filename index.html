@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MY POS</title>
+<style>
+:root{--blue:#5865e8;--ink:#202638;--muted:#778096;--bg:#f4f6fb;--line:#e6e9f1}
+*{box-sizing:border-box}body{margin:0;font:15px Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea{font:inherit}button{border:0;border-radius:9px;padding:11px 14px;cursor:pointer;font-weight:600}
+.primary{background:var(--blue);color:white}.soft{background:#eef0ff;color:var(--blue)}.hidden{display:none!important}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+input,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;margin:6px 0 12px}
+label{display:block;font-weight:bold;font-size:13px}.muted{color:var(--muted)}
+#auth{min-height:100vh;display:grid;place-items:center;padding:18px}.auth-card{width:min(420px,100%);background:white;padding:26px;border-radius:18px}
+.brand{font-size:28px;font-weight:800;color:var(--blue);text-align:center;margin-bottom:18px}
+.auth-card button{width:100%}.switch{text-align:center;margin-top:16px}.switch a{color:var(--blue);cursor:pointer}
+header{background:white;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0}
+header .brand{margin:0}.actions{display:flex;align-items:center;gap:9px}.avatar{width:36px;height:36px;border-radius:50%;background:#eef0ff;color:var(--blue);display:grid;place-items:center;font-weight:bold}
+.layout{display:flex;min-height:calc(100vh - 65px)}nav{width:210px;background:white;border-right:1px solid var(--line);padding:12px}
+nav button{display:block;width:100%;text-align:left;background:transparent;color:#596176;margin:3px 0}
+nav button.active,nav button:hover{background:#eef0ff;color:var(--blue)}
+main{padding:24px;flex:1;min-width:0}.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.product{background:white;border:1px solid var(--line);border-radius:12px;padding:15px}
+.chat{background:#f8f9fc;padding:12px;border-radius:10px;min-height:170px;max-height:300px;overflow:auto;margin-bottom:12px}
+.msg{background:white;padding:10px;border-radius:10px;margin:8px 0;max-width:85%;overflow-wrap:anywhere}.msg.user{margin-left:auto;background:#e9edff}
+.row{display:flex;gap:8px;align-items:center}.row input{flex:1;min-width:0}.total{display:flex;justify-content:space-between;font-size:19px;font-weight:bold;margin:18px 0}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;border-bottom:1px solid var(--line)}
+.note{background:#fff8e8;color:#765b20;padding:10px;border-radius:9px;font-size:12px;line-height:1.45}
+@media(max-width:650px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}nav button{width:auto;white-space:nowrap}main{padding:14px}header{padding:12px}}
+</style>
+</head>
+<body>
+<section id="auth">
+ <div class="auth-card">
+  <div class="brand">MY POS</div>
+  <div id="login">
+   <h2>Intră în cont</h2>
+   <form id="loginForm"><label>E-mail</label><input id="loginEmail" type="email" required placeholder="demo@email.ro"><label>Parolă demo</label><input id="loginPass" type="password" required><button class="primary">Intră în cont</button></form>
+   <div class="switch">Nu ai cont? <a onclick="authMode('register')">Înregistrează-te</a></div>
+  </div>
+  <div id="register" class="hidden">
+   <h2>Creează un cont demo</h2>
+   <form id="registerForm"><label>Nume</label><input id="regName" required><label>E-mail</label><input id="regEmail" type="email" required><label>Parolă demo</label><input id="regPass" type="password" minlength="4" required><label>Confirmă parola</label><input id="regConfirm" type="password" minlength="4" required><button class="primary">Înregistrare</button></form>
+   <div class="switch">Ai deja cont? <a onclick="authMode('login')">Intră în cont</a></div>
+  </div>
+  <p class="note">Doar demonstrație locală: folosește date fictive, nu parole reale. Conturile nu sunt securizate și dispar la reîncărcarea paginii. Pentru utilizatori reali este necesar un serviciu de autentificare pe server.</p>
+ </div>
+</section>
+<div id="app" class="hidden">
+ <header><div class="brand">MY POS</div><div class="actions"><button class="soft" onclick="page('settings')">Settings</button><div class="avatar" id="avatar">U</div></div></header>
+ <div class="layout">
+  <nav>
+   <button class="active" data-page="dashboard" onclick="page('dashboard')">Panou</button>
+   <button data-page="conversation" onclick="page('conversation')">Conversație</button>
+   <button data-page="email" onclick="page('email')">E-mail</button>
+   <button data-page="orders" onclick="page('orders')">Comenzi</button>
+   <button data-page="customers" onclick="page('customers')">Clienți</button>
+   <button data-page="purchase" onclick="page('purchase')">Cumpărare</button>
+   <button data-page="history" onclick="page('history')">Istoric</button>
+   <button data-page="reports" onclick="page('reports')">Rapoarte</button>
+  </nav>
+  <main>
+   <section id="dashboard" class="page active"><h1>Panou principal</h1><p>Bine ai venit, <b id="welcome"></b>!</p><div class="grid"><div class="card">Comenzi<div><b id="statOrders">0</b></div></div><div class="card">Produse în coș<div><b id="statCart">0</b></div></div><div class="card">Vânzări demo<div><b id="statSales">0 lei</b></div></div></div><div class="card"><h3>Bun venit în MY POS</h3><button class="primary" onclick="page('purchase')">Vezi produsele</button></div></section>
+   <section id="conversation" class="page"><h1>Conversație</h1><div class="card"><div class="chat" id="chat"><div class="msg">Salut! Aceasta este conversația demonstrativă MY POS.</div></div><form class="row" id="chatForm"><input id="chatText" placeholder="Scrie un mesaj..." required><button class="primary">Trimite</button></form></div></section>
+   <section id="email" class="page"><h1>E-mail</h1><div class="card"><form id="emailForm"><label>Către</label><input type="email" required placeholder="destinatar@email.ro"><label>Subiect</label><input required><label>Mesaj</label><textarea required></textarea><button class="primary">Simulează trimiterea</button></form><p class="muted">Nu se trimite niciun e-mail real.</p></div></section>
+   <section id="orders" class="page"><h1>Comenzi</h1><div class="card" id="ordersList">Nu există comenzi.</div></section>
+   <section id="customers" class="page"><h1>Clienți</h1><div class="card"><form id="customerForm"><label>Nume client</label><input id="customerName" required><label>E-mail client</label><input id="customerEmail" type="email" required><button class="primary">Adaugă client</button></form></div><div class="card" id="customersList">Nu există clienți.</div></section>
+   <section id="purchase" class="page"><h1>Cumpărare</h1><p class="muted">Produse demonstrative</p><div class="grid" id="products"></div><div class="card" style="margin-top:16px"><h2>Coșul meu</h2><div id="cartItems">Coșul este gol.</div><div class="total"><span>Total</span><span id="cartTotal">0 lei</span></div><button class="primary" id="checkout" onclick="finishOrder()" disabled>Finalizează cumpărarea</button> <button onclick="clearCart()">Golește coșul</button><p class="muted">Nu se efectuează plăți reale.</p></div></section>
+   <section id="history" class="page"><h1>Istoric</h1><div class="card" id="historyList">Nu există activitate.</div></section>
+   <section id="reports" class="page"><h1>Rapoarte</h1><div class="card" id="report">Nu există date încă.</div></section>
+   <section id="settings" class="page"><h1>Settings</h1><div class="card"><p>Nume: <b id="settingsName"></b></p><p>E-mail: <b id="settingsEmail"></b></p><button class="primary" onclick="logout()">Deconectare</button></div></section>
+  </main>
+ </div>
+</div>
+<script>
+let user=null,cart={},orders=[],customers=[],history=[];
+const products=[{id:1,name:"Produs demonstrativ A",price:25},{id:2,name:"Produs demonstrativ B",price:40},{id:3,name:"Produs demonstrativ C",price:15},{id:4,name:"Produs demonstrativ D",price:60}];
+function authMode(mode){document.getElementById('login').classList.toggle('hidden',mode!=='login');document.getElementById('register').classList.toggle('hidden',mode!=='register')}
+document.getElementById('registerForm').addEventListener('submit',e=>{e.preventDefault();let name=regName.value.trim(),email=regEmail.value.trim().toLowerCase(),pass=regPass.value;if(pass!==regConfirm.value)return alert('Parolele nu coincid.');user={name,email,pass};authMode('login');loginEmail.value=email;loginPass.value=pass;alert('Cont demo creat. Apasă „Intră în cont”.')});
+document.getElementById('loginForm').addEventListener('submit',e=>{e.preventDefault();if(!user||loginEmail.value.trim().toLowerCase()!==user.email||loginPass.value!==user.pass)return alert('Creează mai întâi un cont demo sau verifică datele.');openApp()});
+function openApp(){auth.classList.add('hidden');app.classList.remove('hidden');welcome.textContent=user.name;avatar.textContent=user.name[0].toUpperCase();settingsName.textContent=user.name;settingsEmail.textContent=user.email;drawAll()}
+function logout(){user=null;cart={};app.classList.add('hidden');auth.classList.remove('hidden');authMode('login');loginPass.value=''}
+function page(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id))}
+function log(t){history.unshift(new Date().toLocaleString('ro-RO')+' — '+t);drawHistory()}
+function drawProducts(){products.forEach(p=>{let d=document.createElement('div');d.className='product';let h=document.createElement('h3');h.textContent=p.name;let price=document.createElement('p');price.textContent=p.price+' lei';let b=document.createElement('button');b.className='primary';b.textContent='Adaugă în coș';b.onclick=()=>{cart[p.id]=(cart[p.id]||0)+1;log('Produs adăugat în coș');drawCart()};d.append(h,price,b);document.getElementById('products').append(d)})}
+function total(){return products.reduce((s,p)=>s+p.price*(cart[p.id]||0),0)}
+function count(){return Object.values(cart).reduce((a,b)=>a+b,0)}
+function drawCart(){let box=cartItems;box.replaceChildren();let chosen=products.filter(p=>cart[p.id]);if(!chosen.length)box.textContent='Coșul este gol.';chosen.forEach(p=>{let line=document.createElement('p');line.textContent=p.name+' — '+cart[p.id]+' × '+p.price+' lei ';let minus=document.createElement('button');minus.textContent='−';minus.onclick=()=>{cart[p.id]--;if(cart[p.id]<=0)delete cart[p.id];drawCart()};let plus=document.createElement('button');plus.textContent='+';plus.onclick=()=>{cart[p.id]++;drawCart()};line.append(minus,plus);box.append(line)});cartTotal.textContent=total()+' lei';checkout.disabled=!chosen.length;stats()}
+function clearCart(){cart={};drawCart()}
+function finishOrder(){if(!count())return;orders.push({id:orders.length+1,date:new Date().toLocaleString('ro-RO'),count:count(),total:total()});cart={};log('Comandă demo finalizată');drawAll();alert('Comanda demo a fost înregistrată. Nu s-a efectuat nicio plată.')}
+function stats(){statOrders.textContent=orders.length;statCart.textContent=count();statSales.textContent=orders.reduce((s,o)=>s+o.total,0)+' lei';report.textContent='Comenzi: '+orders.length+' | Produse vândute: '+orders.reduce((s,o)=>s+o.count,0)+' | Total: '+orders.reduce((s,o)=>s+o.total,0)+' lei'}
+function drawOrders(){ordersList.replaceChildren();if(!orders.length){ordersList.textContent='Nu există comenzi.';return}let t=document.createElement('table');t.innerHTML='<tr><th>Comandă</th><th>Data</th><th>Produse</th><th>Total</th></tr>';orders.forEach(o=>{let r=t.insertRow();[o.id,o.date,o.count,o.total+' lei'].forEach(v=>r.insertCell().textContent=v)});ordersList.append(t)}
+function drawCustomers(){customersList.replaceChildren();if(!customers.length){customersList.textContent='Nu există clienți.';return}let t=document.createElement('table');t.innerHTML='<tr><th>Nume</th><th>E-mail</th></tr>';customers.forEach(c=>{let r=t.insertRow();r.insertCell().textContent=c.name;r.insertCell().textContent=c.email});customersList.append(t)}
+customerForm.addEventListener('submit',e=>{e.preventDefault();customers.push({name:customerName.value.trim(),email:customerEmail.value.trim()});customerForm.reset();drawCustomers();log('Client demo adăugat')});
+chatForm.addEventListener('submit',e=>{e.preventDefault();let m=chatText.value.trim();if(!m)return;let a=document.createElement('div');a.className='msg user';a.textContent=m;chat.append(a);let b=document.createElement('div');b.className='msg';b.textContent='Am primit mesajul. Acesta este un răspuns demonstrativ.';chat.append(b);chatText.value='';chat.scrollTop=chat.scrollHeight});
+emailForm.addEventListener('submit',e=>{e.preventDefault();alert('Trimiterea e-mailului a fost simulată. Nu a fost trimis nimic.');emailForm.reset();log('Trimitere e-mail simulată')});
+function drawHistory(){historyList.replaceChildren();if(!history.length){historyList.textContent='Nu există activitate.';return}history.forEach(x=>{let p=document.createElement('p');p.textContent=x;historyList.append(p)})}
+function drawAll(){drawProducts();drawCart();drawOrders();drawCustomers();drawHistory();stats()}
+</script>
+</body>
+</html>
